@@ -20,35 +20,56 @@ searchBar.addEventListener("click", (e) => {
 /* fetch API pokémon*/
 
 const pokemonList = []
-console.log(pokemonList);
+console.log(pokemonList)
+const firstGen = [...Array(151).keys()]
+console.log(firstGen)
 
 
-for(let i = 1; i <= 151; i++) {
-    fetch("https://pokeapi.co/api/v2/pokemon-species/" + i)
+firstGen.forEach(pokemon => {
+    fetch("https://pokeapi.co/api/v2/pokemon-species/" + [pokemon + 1])
         .then(response => response.json())
         .then(data => {
             /*console.log(data.sprites.other["official-artwork"].front_default) /*sprite de face*/
             
-            const frenchName = data.names[4].name
             const pokemonId = data.id
+            const frenchName = data.names.find((nameData) => nameData.language.name === "fr").name
     
-            pokemonList.push(frenchName)
+            pokemonList[pokemonId - 1] = {
+                id: pokemonId,
+                name: frenchName
+            }
             
-            fetch("https://pokeapi.co/api/v2/pokemon/" + pokemonId)
+            fetch("https://pokeapi.co/api/v2/pokemon/" + pokemonList[pokemonId - 1].id)
                 .then(response => response.json())
                 .then(data => {
-    
+                    
+                    const artwork = data.sprites.other["official-artwork"].front_default
+                    const types = data.types
+                    
+                    pokemonList[pokemonId - 1] = {
+                        id: pokemonId,
+                        name: frenchName,
+                        img: artwork,
+                        types: types
+                    }
+
                     pagination(data)
                     
                     
                 })
                 .catch(error => console.error(error))
+            
         })
         .catch(error => console.error(error))
-}
+
+})
+
+
+
+
+
 
 /* Pagination */
-
 
 const pagination = (data) => {
     /*
@@ -61,6 +82,7 @@ const pagination = (data) => {
     <span class="type-tag fire">Feu</span>
     </div>
     */
+
     const start = document.querySelector("main")
     const createDiv = document.createElement("div")
 
@@ -69,7 +91,8 @@ const pagination = (data) => {
     const pokemonName = document.createElement("h2")
 
     createDiv.appendChild(pokemonName)
-    pokemonName.innerText = `${pokemonList[data.id]}`
+    pokemonName.innerText = `${pokemonList[data.id - 1].name}`
+    
 
     const pokemonImg = document.createElement("img")
 
@@ -102,5 +125,6 @@ const pagination = (data) => {
 
  
 }
+
 
 
