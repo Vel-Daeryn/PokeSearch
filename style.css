@@ -108,6 +108,8 @@ main {
     justify-content: space-evenly;
     align-items: center;
     margin-top: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
 .poke-cards {
@@ -116,15 +118,17 @@ main {
     align-items: center;
     background-color: var(--bg-color-element);
     width: 320px;
+    height: 420px;
     padding: 1rem;
     border-radius: 12px;
     box-shadow: var(--shadow-element);
     cursor: pointer;
+    text-transform: capitalize;
 }
 
 .poke-cards img {
     margin: 0.5rem 0;
-    width: 150px;
+    width: 200px;
     object-fit: contain;
 }
 
@@ -149,7 +153,7 @@ main {
     }
 }
 
-.id span {
+.id {
     color: #BFBFBF;
 }
 
@@ -161,6 +165,7 @@ main {
     width: 100px;
     text-align: center;
     border-radius: 6px;
+    text-transform: capitalize;
 }
 
 .fire {
