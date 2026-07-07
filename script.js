@@ -73,59 +73,6 @@ const loadPokedex = async () => {
 
 loadPokedex()
 
-/*const loadFirstGen = async () => {
-    for (const pokemon of firstGen) {
-        try {
-            const pokemonId = pokemon + 1
-
-            const speciesResponse = await fetch(
-                `https://pokeapi.co/api/v2/pokemon-species/${pokemonId}`
-            )
-
-            if (!speciesResponse.ok) {
-                throw new Error(`Erreur species pour le Pokémon ${pokemonId}`)
-            }
-
-            const speciesData = await speciesResponse.json()
-
-            const frenchName = speciesData.names.find(
-                (nameData) => nameData.language.name === "fr"
-            ).name
-
-            const pokemonResponse = await fetch(
-                `https://pokeapi.co/api/v2/pokemon/${pokemonId}`
-            )
-
-            if (!pokemonResponse.ok) {
-                throw new Error(`Erreur pokemon pour le Pokémon ${pokemonId}`)
-            }
-
-            const pokemonData = await pokemonResponse.json();
-
-            const artwork =
-                pokemonData.sprites.other["official-artwork"].front_default;
-
-            const types = pokemonData.types
-
-            pokemonList[pokemonId - 1] = {
-                id: pokemonId,
-                name: frenchName,
-                img: artwork,
-                types: types
-            }
-
-            pagination(pokemonList[pokemonId - 1])
-
-        } catch (error) {
-            console.error(error)
-        }
-    }
-
-    console.log(pokemonList)
-}
-
-loadFirstGen()*/
-
 /* Pagination */
 
 const pagination = (pokemonList) => {
