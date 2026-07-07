@@ -17,20 +17,47 @@ searchBar.addEventListener("click", (e) => {
     }
 })
 
+/* Load More Button */
+
+const loadButton = document.getElementById("loadMore")
+
+loadButton.addEventListener("click", (e) => {
+    
+    if (isLoading) {
+        return
+    }
+
+    e.preventDefault()
+    currentLoad += 1
+    loadPokedex()
+})
+
 /* fetch API pokémon*/
 
-/*const pokemonList = []*/
 const pokemonList = []
-const firstGen = [...Array(151).keys()]
-
+const pokemonPerLoad = 20
+const maxPokemon = 151
+let currentLoad = 1
 
 const speciesURL = "https://pokeapi.co/api/v2/pokemon-species/"
 const pokemondURL = "https://pokeapi.co/api/v2/pokemon/"
 
+let isLoading = false
+
 const loadPokedex = async () => {
-    for (const pokemon of firstGen) {
+
+    if(isLoading){
+        return
+    }
+
+    isLoading = true
+    loadButton.disabled = true
+
+    const startId = (currentLoad - 1) * pokemonPerLoad + 1
+    const endId = Math.min(startId + pokemonPerLoad - 1, maxPokemon)
+
+    for (let pokemonId = startId; pokemonId <= endId; pokemonId++) {
         try {
-            const pokemonId = pokemon + 1 /* -> take FirstGen Array index (which start at 0) to load the first 151 data */
             
             const speciesResponse = await fetch(`${speciesURL}${pokemonId}`) /* for each call, we await the response data */
             
@@ -61,12 +88,21 @@ const loadPokedex = async () => {
                 types: pokemonType
             } /* Inject pokemonList array with all the data necessary */
 
-            pagination(pokemonList[pokemonId - 1])
+            createPokemonCards(pokemonList[pokemonId - 1])
 
 
         }
         catch(error) {
             console.log("Erreur: " + error)
+        }
+        finally {
+            isLoading = false
+
+            if(endId >= maxPokemon) {
+                loadButton.hidden = true
+            } else {
+                loadButton.disabled = false
+            }
         }
     }
 }
@@ -75,7 +111,7 @@ loadPokedex()
 
 /* Pagination */
 
-const pagination = (pokemonList) => {
+const createPokemonCards = (pokemonList) => {
     /*
     Pagination in HTML -> 
     -----------------
@@ -125,9 +161,5 @@ const pagination = (pokemonList) => {
         createDiv.appendChild(typeTagSecond).setAttribute("class", `type-tag ${pokemonType[1]}`)
         typeTagSecond.innerText = `${pokemonType[1]}`
     }
-
  
 }
-
-
-
