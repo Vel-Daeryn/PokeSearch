@@ -19,66 +19,123 @@ searchBar.addEventListener("click", (e) => {
 
 /* fetch API pokémon*/
 
+/*const pokemonList = []*/
 const pokemonList = []
-console.log(pokemonList)
 const firstGen = [...Array(151).keys()]
-console.log(firstGen)
 
 
-firstGen.forEach(pokemon => {
-    fetch("https://pokeapi.co/api/v2/pokemon-species/" + [pokemon + 1])
-        .then(response => response.json())
-        .then(data => {
-            /*console.log(data.sprites.other["official-artwork"].front_default) /*sprite de face*/
+const speciesURL = "https://pokeapi.co/api/v2/pokemon-species/"
+const pokemondURL = "https://pokeapi.co/api/v2/pokemon/"
+
+const loadPokedex = async () => {
+    for (const pokemon of firstGen) {
+        try {
+            const pokemonId = pokemon + 1 /* -> take FirstGen Array index (which start at 0) to load the first 151 data */
             
-            const pokemonId = data.id
-            const frenchName = data.names.find((nameData) => nameData.language.name === "fr").name
-    
+            const speciesResponse = await fetch(`${speciesURL}${pokemonId}`) /* for each call, we await the response data */
+            
+            if (!speciesResponse.ok) {
+                throw new Error(`Erreur de l'appel API vers 'pokemon-species' pour le Pokémon ${pokemonId}`)
+            } /* Check if the call to the API response is different than okay */
+
+            const speciesData = await speciesResponse.json() /*transform the response into usable JSON */
+
+            const frenchName = speciesData.names.find((french) => french.language.name === "fr").name
+            
+            /* Second call API to a different URL */
+            const pokemonResponse = await fetch(`${pokemondURL}${pokemonId}`) 
+            
+            if (!pokemonResponse.ok) {
+                throw new Error(`Erreur de l'appel API vers 'pokemon' pour le Pokémon ${pokemonId}`)
+            }
+
+            const pokemonData = await pokemonResponse.json()
+            
+            const artwork =  pokemonData.sprites.other["official-artwork"].front_default
+            const pokemonType = pokemonData.types
+            
             pokemonList[pokemonId - 1] = {
                 id: pokemonId,
-                name: frenchName
+                name: frenchName,
+                img: artwork,
+                types: pokemonType
+            } /* Inject pokemonList array with all the data necessary */
+
+            pagination(pokemonList[pokemonId - 1])
+
+
+        }
+        catch(error) {
+            console.log("Erreur: " + error)
+        }
+    }
+}
+
+loadPokedex()
+
+/*const loadFirstGen = async () => {
+    for (const pokemon of firstGen) {
+        try {
+            const pokemonId = pokemon + 1
+
+            const speciesResponse = await fetch(
+                `https://pokeapi.co/api/v2/pokemon-species/${pokemonId}`
+            )
+
+            if (!speciesResponse.ok) {
+                throw new Error(`Erreur species pour le Pokémon ${pokemonId}`)
             }
-            
-            fetch("https://pokeapi.co/api/v2/pokemon/" + pokemonList[pokemonId - 1].id)
-                .then(response => response.json())
-                .then(data => {
-                    
-                    const artwork = data.sprites.other["official-artwork"].front_default
-                    const types = data.types
-                    
-                    pokemonList[pokemonId - 1] = {
-                        id: pokemonId,
-                        name: frenchName,
-                        img: artwork,
-                        types: types
-                    }
 
-                    pagination(data)
-                    
-                    
-                })
-                .catch(error => console.error(error))
-            
-        })
-        .catch(error => console.error(error))
+            const speciesData = await speciesResponse.json()
 
-})
+            const frenchName = speciesData.names.find(
+                (nameData) => nameData.language.name === "fr"
+            ).name
 
+            const pokemonResponse = await fetch(
+                `https://pokeapi.co/api/v2/pokemon/${pokemonId}`
+            )
 
+            if (!pokemonResponse.ok) {
+                throw new Error(`Erreur pokemon pour le Pokémon ${pokemonId}`)
+            }
 
+            const pokemonData = await pokemonResponse.json();
 
+            const artwork =
+                pokemonData.sprites.other["official-artwork"].front_default;
 
+            const types = pokemonData.types
+
+            pokemonList[pokemonId - 1] = {
+                id: pokemonId,
+                name: frenchName,
+                img: artwork,
+                types: types
+            }
+
+            pagination(pokemonList[pokemonId - 1])
+
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    console.log(pokemonList)
+}
+
+loadFirstGen()*/
 
 /* Pagination */
 
-const pagination = (data) => {
+const pagination = (pokemonList) => {
     /*
     Pagination in HTML -> 
     -----------------
     <div class="poke-cards">
     <h2>Caninos</h2>
     <img src="res/img/250px-template.png" alt="Une image de Caninos">
-    <p class="id">n°58</p>
+    <p class="id" data-id="n">n°58</p>
     <span class="type-tag fire">Feu</span>
     </div>
     */
@@ -91,23 +148,22 @@ const pagination = (data) => {
     const pokemonName = document.createElement("h2")
 
     createDiv.appendChild(pokemonName)
-    pokemonName.innerText = `${pokemonList[data.id - 1].name}`
-    
+    pokemonName.innerText = `${pokemonList.name}`  
 
     const pokemonImg = document.createElement("img")
 
-    createDiv.appendChild(pokemonImg).src = `${data.sprites.other["official-artwork"].front_default}`
+    createDiv.appendChild(pokemonImg).src = `${pokemonList.img}`
 
     const pokemonNumber = document.createElement("p")
 
     createDiv.appendChild(pokemonNumber).classList.add("id")
-    pokemonNumber.innerText = `n°${data.id}`
+    pokemonNumber.innerText = `n°${pokemonList.id}`
 
     const typeTag = document.createElement("span")
     const typeTagSecond = document.createElement("span")
     
     const pokemonType = []
-    data.types.forEach(element => {
+    pokemonList.types.forEach(element => {
         pokemonType.push(element.type.name) 
     })
 
