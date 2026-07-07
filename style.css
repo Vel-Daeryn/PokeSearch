@@ -10,7 +10,7 @@
 
 @font-face {
     font-family: "KodeMono";
-    src: url(/res/fonts/KodeMono-VariableFont_wght.ttf);
+    src: url(./res/fonts/KodeMono-VariableFont_wght.ttf);
 }
 
 *, *::before, *::after {
