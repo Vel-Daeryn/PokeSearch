@@ -149,17 +149,41 @@ const createPokemonCards = (pokemonList) => {
     pokemonList.types.forEach(element => {
         pokemonType.push(element.type.name) 
     })
+    
+    const pokemonTypeInFrench = {
+        grass: "plante",
+        poison: "poison",
+        fire: "feu",
+        flying: "vol",
+        water: "eau",
+        bug: "insecte",
+        normal: "normal",
+        ground: "sol",
+        rock: "roche",
+        fairy: "fée",
+        fighting: "combat",
+        psychic: "psy",
+        dark: "ténèbres",
+        ghost: "spectre",
+        steel: "acier",
+        electric: "électrik",
+        ice: "glace",
+        dragon: "dragon"
+    }
+
+    const typeTranslated = pokemonTypeInFrench[pokemonType[0]]
+    const secondTypeTranslated = pokemonTypeInFrench[pokemonType[1]]
 
 
     if(pokemonType.length === 1) {
         createDiv.appendChild(typeTag).setAttribute("class", `type-tag ${pokemonType[0]}`)
-        typeTag.innerText = `${pokemonType[0]}`
+        typeTag.innerHTML = typeTranslated
+
     } else {
         createDiv.appendChild(typeTag).setAttribute("class", `type-tag ${pokemonType[0]}`)
-        typeTag.innerText = `${pokemonType[0]}`
-
+        typeTag.innerHTML = typeTranslated
         createDiv.appendChild(typeTagSecond).setAttribute("class", `type-tag ${pokemonType[1]}`)
-        typeTagSecond.innerText = `${pokemonType[1]}`
+        typeTagSecond.innerHTML = secondTypeTranslated
     }
- 
+
 }
